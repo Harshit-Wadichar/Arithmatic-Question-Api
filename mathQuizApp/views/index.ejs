@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Math Quiz</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #4e54c8;
+      --accent: #8f94fb;
+      --bg: #f2f3f8;
+      --text: #333;
+      --white: #fff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+    }
+
+    #load {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-bottom: 1.5rem;
+    }
+    #load:hover {
+      background: var(--accent);
+    }
+
+    #quiz {
+      display: none;
+    }
+
+    #question {
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .option-btn {
+      display: block;
+      width: 100%;
+      background: var(--bg);
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      padding: 0.6rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+    .option-btn:hover {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    #result {
+      font-weight: 600;
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Math Quiz</h1>
+    <button id="load">Load Question</button>
+
+    <div id="quiz">
+      <p id="question"></p>
+      <div id="options"></div>
+      <p id="result"></p>
+    </div>
+  </div>
+
+  <script>
+    const loadBtn    = document.getElementById('load');
+    const quizDiv    = document.getElementById('quiz');
+    const questionEl = document.getElementById('question');
+    const optionsEl  = document.getElementById('options');
+    const resultEl   = document.getElementById('result');
+
+    loadBtn.addEventListener('click', async () => {
+      // Fetch question
+      const res = await fetch('/math-question');
+      const { question, correctAnswer, options } = await res.json();
+
+      // Show quiz card
+      quizDiv.style.display = 'block';
+      questionEl.textContent = question;
+      resultEl.textContent = '';
+      optionsEl.innerHTML = '';
+
+      // Render options
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.className = 'option-btn';
+        btn.addEventListener('click', () => {
+          if (opt === correctAnswer) {
+            resultEl.textContent = `✅ Correct! You chose ${opt}.`;
+            resultEl.style.color = 'green';
+          } else {
+            resultEl.textContent = `❌ Wrong. You chose ${opt}. Correct answer is ${correctAnswer}.`;
+            resultEl.style.color = 'red';
+          }
+        });
+        optionsEl.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>
